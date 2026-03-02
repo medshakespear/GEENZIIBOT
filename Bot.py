@@ -1533,16 +1533,16 @@ async def mod_cmd(interaction: discord.Interaction):
     if not is_mod(interaction.user):
         await interaction.response.send_message("▸ Moderators only.", ephemeral=True); return
     v = ModPanel(); s = bot_data["settings"]
-    e = discord.Embed(title="🔹 Moderator Panel", color=CLR_MAIN, description="```\n  SERVER  CONTROLS\n```")
-    e.add_field(name=" Squads", value="＋ Create · － Delete", inline=False)
-    e.add_field(name=" Verification", value="🔹 Deploy ·  Grant existing", inline=False)
-    e.add_field(name=" Config", value=" Roles ·  Channels ·  Backup", inline=False)
+    e = discord.Embed(title="Moderator Panel", color=CLR_MAIN, description="```\n  SERVER  CONTROLS\n```")
+    e.add_field(name=" Squads", value="＋ Create  － Delete", inline=False)
+    e.add_field(name=" Verification", value=" Deploy   Grant existing", inline=False)
+    e.add_field(name=" Config", value=" Roles   Channels   Backup", inline=False)
     e.add_field(name=" Settings", value=(
         f"Verified: `{s.get('verified_role')}`\nUnverified: `{s.get('unverified_role')}`\n"
         f"Verify: `#{s.get('verification_channel')}`\nLogs: `#{s.get('log_channel')}`\n"
         f"Find Player: `#{s.get('find_player_channel')}`\nFind Team: `#{s.get('find_team_channel')}`"
     ), inline=False)
-    e.set_footer(text="🔹 Nexus")
+    e.set_footer(text=" Nexus")
     await interaction.response.send_message(embed=e, view=v, ephemeral=True)
 
 
