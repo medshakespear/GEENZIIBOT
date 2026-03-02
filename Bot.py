@@ -1518,12 +1518,12 @@ async def leader_cmd(interaction: discord.Interaction):
     e = discord.Embed(title=f"🔹 Leader ─ {role.name}",
         color=role.color if role.color != discord.Color.default() else CLR_ACCENT,
         description=f"```\n  {tag:^20}\n```")
-    e.add_field(name="▸ Manage", value="＋/－ Members · ★/☆ Mains · ↻/× Subs", inline=False)
-    e.add_field(name="▸ Recruit", value=(
-        f"⊕ **Post** → `#{S('find_player_channel')}`\n"
-        "⊙ **Search** → filter by lane + rank + gender → send **tryout invite**"
+    e.add_field(name=" Manage", value="＋/－ Members ·  Mains ·  Subs", inline=False)
+    e.add_field(name=" Recruit", value=(
+        f" **Post** → `#{S('find_player_channel')}`\n"
+        " **Search** → filter by lane + rank + gender → send **tryout invite**"
     ), inline=False)
-    e.add_field(name="▸ Access", value="☉/⊘ Guest roles", inline=False)
+    e.add_field(name=" Access", value=" Guest roles", inline=False)
     e.set_footer(text="🔹 Nexus")
     await interaction.response.send_message(embed=e, view=v, ephemeral=True)
 
@@ -1534,10 +1534,10 @@ async def mod_cmd(interaction: discord.Interaction):
         await interaction.response.send_message("▸ Moderators only.", ephemeral=True); return
     v = ModPanel(); s = bot_data["settings"]
     e = discord.Embed(title="🔹 Moderator Panel", color=CLR_MAIN, description="```\n  SERVER  CONTROLS\n```")
-    e.add_field(name="▸ Squads", value="＋ Create · － Delete", inline=False)
-    e.add_field(name="▸ Verification", value="🔹 Deploy · ✓ Grant existing", inline=False)
-    e.add_field(name="▸ Config", value="⚙ Roles · ⌘ Channels · ↓ Backup", inline=False)
-    e.add_field(name="▸ Settings", value=(
+    e.add_field(name=" Squads", value="＋ Create · － Delete", inline=False)
+    e.add_field(name=" Verification", value="🔹 Deploy ·  Grant existing", inline=False)
+    e.add_field(name=" Config", value=" Roles ·  Channels ·  Backup", inline=False)
+    e.add_field(name=" Settings", value=(
         f"Verified: `{s.get('verified_role')}`\nUnverified: `{s.get('unverified_role')}`\n"
         f"Verify: `#{s.get('verification_channel')}`\nLogs: `#{s.get('log_channel')}`\n"
         f"Find Player: `#{s.get('find_player_channel')}`\nFind Team: `#{s.get('find_team_channel')}`"
