@@ -27,7 +27,7 @@ CLR_DIM = 0x2C3E50
 CLR_RECRUIT = 0x7C3AED
 
 LANES = ["Gold Lane", "Mid Lane", "Exp Lane", "Jungler", "Roamer"]
-LANE_ICONS = {"Gold Lane": "◈", "Mid Lane": "◆", "Exp Lane": "◇", "Jungler": "✦", "Roamer": "❖"}
+LANE_ICONS = {"Gold Lane": "🔹", "Mid Lane": "◆", "Exp Lane": "◇", "Jungler": "✦", "Roamer": "❖"}
 
 # Ranks ordered from lowest to highest for filtering
 RANKS = ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic", "Mythical Honor", "Mythical Glory", "Mythical Immortal"]
@@ -86,7 +86,7 @@ async def log_action(guild, title, desc):
     ch = discord.utils.get(guild.text_channels, name=S("log_channel"))
     if not ch: return
     e = discord.Embed(title=title, description=desc, color=CLR_DIM, timestamp=datetime.utcnow())
-    e.set_footer(text="◈ Nexus Logs")
+    e.set_footer(text="🔹 Nexus Logs")
     try: await ch.send(embed=e)
     except: pass
 
@@ -145,15 +145,15 @@ def get_base_rank(rank_str):
 async def ensure_roles(guild):
     existing = {r.name for r in guild.roles}
     for name in [S("unverified_role")]:
-        if name not in existing: await guild.create_role(name=name, color=discord.Color.dark_grey(), reason="Nexus ◈")
+        if name not in existing: await guild.create_role(name=name, color=discord.Color.dark_grey(), reason="Nexus 🔹")
     for name in [S("verified_role")]:
-        if name not in existing: await guild.create_role(name=name, color=discord.Color.from_str("#00D4FF"), reason="Nexus ◈")
+        if name not in existing: await guild.create_role(name=name, color=discord.Color.from_str("#00D4FF"), reason="Nexus 🔹")
     for lane in LANES:
-        if lane not in existing: await guild.create_role(name=lane, reason=f"Nexus ◈ {lane}")
+        if lane not in existing: await guild.create_role(name=lane, reason=f"Nexus 🔹 {lane}")
     for rank in RANKS:
-        if rank not in existing: await guild.create_role(name=rank, reason=f"Nexus ◈ {rank}")
+        if rank not in existing: await guild.create_role(name=rank, reason=f"Nexus 🔹 {rank}")
     for name in ["18+", "Under 18", "Male", "Female"]:
-        if name not in existing: await guild.create_role(name=name, reason=f"Nexus ◈ {name}")
+        if name not in existing: await guild.create_role(name=name, reason=f"Nexus 🔹 {name}")
 
 async def send_verify_embed(guild):
     ch = discord.utils.get(guild.text_channels, name=S("verification_channel"))
@@ -162,11 +162,11 @@ async def send_verify_embed(guild):
         if msg.author == bot.user and msg.embeds:
             for em in msg.embeds:
                 if em.title and "Verification" in em.title: return
-    e = discord.Embed(title="◈ Nexus ─ Verification", color=CLR_ACCENT,
+    e = discord.Embed(title="🔹 Nexus ─ Verification", color=CLR_ACCENT,
         description="```\n  ╔══════════════════════════════╗\n  ║   IDENTITY  VERIFICATION     ║\n  ╚══════════════════════════════╝\n```\nComplete your profile to unlock the server.")
     e.add_field(name="▸ Process", value="**1 ·** Click `Verify` below\n**2 ·** Enter **IGN** and **Game ID**\n**3 ·** Select **Lane · Rank · Age · Gender**\n**4 ·** Click `Confirm`", inline=False)
     e.add_field(name="▸ Roles Granted", value=f"` ✓ ` **{S('verified_role')}** — full access\n` ✓ ` Lane · Rank · Age · Gender roles", inline=False)
-    e.set_footer(text="◈ Update anytime with /panel")
+    e.set_footer(text="🔹 Update anytime with /panel")
     await ch.send(embed=e, view=VerifyButtonView())
 
 
@@ -195,7 +195,7 @@ class RankSelectView(View):
         sel.callback = cb
 
 
-class StarInputModal(Modal, title="◈ Star Count"):
+class StarInputModal(Modal, title="🔹 Star Count"):
     stars = TextInput(label="How many stars?", placeholder="e.g. 50, 130, 600", required=True, max_length=10)
 
     def __init__(self, rank, callback_fn):
@@ -218,7 +218,7 @@ class StarInputModal(Modal, title="◈ Star Count"):
 
 class VerifyButtonView(View):
     def __init__(self): super().__init__(timeout=None)
-    @discord.ui.button(label="Verify", emoji="◈", style=discord.ButtonStyle.success, custom_id="nexus_verify")
+    @discord.ui.button(label="Verify", emoji="🔹", style=discord.ButtonStyle.success, custom_id="nexus_verify")
     async def click(self, interaction, button):
         vr = discord.utils.get(interaction.guild.roles, name=S("verified_role"))
         if vr and vr in interaction.user.roles:
@@ -226,13 +226,13 @@ class VerifyButtonView(View):
         await interaction.response.send_modal(VerifyModal(interaction.user.id))
 
 
-class VerifyModal(Modal, title="◈ Nexus ─ Verification"):
+class VerifyModal(Modal, title="🔹 Nexus ─ Verification"):
     ign = TextInput(label="In-Game Name (IGN)", placeholder="Your ML IGN", required=True, max_length=50)
     gid = TextInput(label="In-Game ID", placeholder="Numeric ML ID", required=True, max_length=50)
     def __init__(self, uid): super().__init__(); self.uid = uid
     async def on_submit(self, interaction):
         v = VerifyStep2(self.uid, self.ign.value, self.gid.value)
-        e = discord.Embed(title="◈ Step 2", color=CLR_ACCENT,
+        e = discord.Embed(title="🔹 Step 2", color=CLR_ACCENT,
             description=f"```\nIGN : {self.ign.value}\nID  : {self.gid.value}\n```\nSelect all options then **Confirm**.")
         await interaction.response.send_message(embed=e, view=v, ephemeral=True)
 
@@ -308,7 +308,7 @@ class VerifyStep2(View):
         for rn in [S("verified_role"), self.lane, base_rank, self.age, self.gender]:
             r = discord.utils.get(guild.roles, name=rn)
             if r: add_roles.append(r)
-        try: await member.add_roles(*add_roles, reason="Nexus ◈ Verified")
+        try: await member.add_roles(*add_roles, reason="Nexus 🔹 Verified")
         except Exception as ex: print(f"[ERR] {ex}")
 
         ur = discord.utils.get(guild.roles, name=S("unverified_role"))
@@ -317,7 +317,7 @@ class VerifyStep2(View):
             except: pass
 
         li = LANE_ICONS.get(self.lane, "·")
-        e = discord.Embed(title="◈ Verified", color=CLR_SUCCESS,
+        e = discord.Embed(title="🔹 Verified", color=CLR_SUCCESS,
             description=f"Welcome, **{member.display_name}**.")
         e.add_field(name="IGN", value=f"`{self.ign}`", inline=True)
         e.add_field(name="ID", value=f"`{self.gid}`", inline=True)
@@ -326,12 +326,12 @@ class VerifyStep2(View):
         e.add_field(name="Age", value=self.age, inline=True)
         e.add_field(name="Gender", value=self.gender, inline=True)
         e.set_thumbnail(url=member.display_avatar.url)
-        e.set_footer(text="◈ /panel to manage")
+        e.set_footer(text="🔹 /panel to manage")
         await interaction.response.edit_message(embed=e, view=None)
-        await log_action(guild, "◈ Verified", f"{member.mention} ─ **{self.ign}** ─ {self.lane} ─ {self.rank}")
+        await log_action(guild, "🔹 Verified", f"{member.mention} ─ **{self.ign}** ─ {self.lane} ─ {self.rank}")
 
 
-class VerifyStarModal(Modal, title="◈ Star Count"):
+class VerifyStarModal(Modal, title="🔹 Star Count"):
     """Star input during verification."""
     stars = TextInput(label="How many stars?", placeholder="e.g. 50, 130, 600", required=True, max_length=10)
 
@@ -354,7 +354,7 @@ class VerifyStarModal(Modal, title="◈ Star Count"):
 #  R E C R U I T M E N T:  Leader posts looking for player
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-class RecruitPostModal(Modal, title="◈ Recruitment Post"):
+class RecruitPostModal(Modal, title="🔹 Recruitment Post"):
     description = TextInput(label="What are you looking for?", placeholder="Playstyle, schedule, requirements...", required=True, style=discord.TextStyle.long, max_length=500)
     min_rank = TextInput(label="Minimum Rank", placeholder="e.g. Epic, Legend, Mythic", required=False, max_length=30)
 
@@ -369,7 +369,7 @@ class RecruitPostModal(Modal, title="◈ Recruitment Post"):
 
         pid = str(uuid.uuid4())[:8]
         li = LANE_ICONS.get(self.lane, "·")
-        e = discord.Embed(title=f"◈ {self.sq_tag} {self.sq_name} ─ Recruiting", color=CLR_RECRUIT,
+        e = discord.Embed(title=f"🔹 {self.sq_tag} {self.sq_name} ─ Recruiting", color=CLR_RECRUIT,
             description=f"```\n  Lane needed : {li} {self.lane}\n  Min Rank   : {self.min_rank.value or 'Any'}\n  Posted by  : {interaction.user.display_name}\n```")
         e.add_field(name="▸ Details", value=self.description.value, inline=False)
         e.add_field(name="▸ Squad", value=f"`{self.sq_tag}` **{self.sq_name}**", inline=True)
@@ -389,7 +389,7 @@ class RecruitPostModal(Modal, title="◈ Recruitment Post"):
         view = ApplyToSquadBtn(pid, self.sq_name, self.sq_tag, self.leader_id)
         await ch.send(embed=e, view=view)
         await interaction.response.send_message(f"▸ Posted in `#{S('find_player_channel')}`. ID: `{pid}`", ephemeral=True)
-        await log_action(interaction.guild, "◈ Recruitment", f"{interaction.user.mention} ─ {li} {self.lane} for **{self.sq_name}**")
+        await log_action(interaction.guild, "🔹 Recruitment", f"{interaction.user.mention} ─ {li} {self.lane} for **{self.sq_name}**")
 
 
 class ApplyToSquadBtn(View):
@@ -417,7 +417,7 @@ class ApplyToSquadBtn(View):
         if leader:
             li = LANE_ICONS.get(p.get("lane", ""), "·")
             try:
-                de = discord.Embed(title=f"◈ Application ─ {self.tag} {self.sq}", color=CLR_RECRUIT,
+                de = discord.Embed(title=f"🔹 Application ─ {self.tag} {self.sq}", color=CLR_RECRUIT,
                     description=f"**{interaction.user.display_name}** wants to join.")
                 de.add_field(name="IGN", value=f"`{p.get('ingame_name')}`", inline=True)
                 de.add_field(name="ID", value=f"`#{p.get('ingame_id')}`", inline=True)
@@ -431,7 +431,7 @@ class ApplyToSquadBtn(View):
             except: pass
 
         await interaction.response.send_message(f"▸ Application sent to **{self.tag} {self.sq}** leadership.", ephemeral=True)
-        await log_action(guild, "◈ Applied", f"{interaction.user.mention} → **{self.sq}**")
+        await log_action(guild, "🔹 Applied", f"{interaction.user.mention} → **{self.sq}**")
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -512,12 +512,12 @@ class SearchFiltersView(View):
         filter_text = " · ".join(filters)
 
         if not matches:
-            e = discord.Embed(title="◈ No Results", color=CLR_WARN,
+            e = discord.Embed(title="🔹 No Results", color=CLR_WARN,
                 description=f"No players found matching:\n{filter_text}")
             await interaction.response.edit_message(embed=e, view=None); return
 
         matches = matches[:15]
-        e = discord.Embed(title=f"◈ Search Results", color=CLR_ACCENT,
+        e = discord.Embed(title=f"🔹 Search Results", color=CLR_ACCENT,
             description=f"Filters: {filter_text}\n**{len(matches)}** player(s) found. Select one to send a **tryout invitation**.")
 
         for m, p in matches:
@@ -579,7 +579,7 @@ class TryoutSelectView(View):
             try:
                 li = LANE_ICONS.get(p.get("lane", ""), "·")
                 dm_embed = discord.Embed(
-                    title="◈ Tryout Invitation",
+                    title="🔹 Tryout Invitation",
                     description=(
                         f"`{self.tag}` **{self.sq}** is interested in you!\n\n"
                         f"**{leader.display_name}** (`{leader.name}`) would like to invite you "
@@ -606,7 +606,7 @@ class TryoutSelectView(View):
                 dm_sent = False
 
             if dm_sent:
-                e = discord.Embed(title="◈ Tryout Sent", color=CLR_SUCCESS,
+                e = discord.Embed(title="🔹 Tryout Sent", color=CLR_SUCCESS,
                     description=(
                         f"Tryout invitation sent to **{member.display_name}**.\n\n"
                         f"If they **accept**, they'll automatically receive the guest role "
@@ -614,11 +614,11 @@ class TryoutSelectView(View):
                         f"Invite ID: `{invite_id}`"
                     ))
             else:
-                e = discord.Embed(title="◈ DM Failed", color=CLR_WARN,
+                e = discord.Embed(title="🔹 DM Failed", color=CLR_WARN,
                     description=f"**{member.display_name}** has DMs disabled.")
 
             await interaction.response.edit_message(embed=e, view=None)
-            await log_action(interaction.guild, "◈ Tryout Sent",
+            await log_action(interaction.guild, "🔹 Tryout Sent",
                 f"{leader.mention} invited {member.mention} for tryout at **{self.sq}**")
         sel.callback = cb
 
@@ -662,14 +662,14 @@ class TryoutResponseView(View):
             if member and guest_role_name:
                 gr = discord.utils.get(guild.roles, name=guest_role_name)
                 if gr:
-                    try: await member.add_roles(gr, reason=f"Nexus ◈ Tryout accepted for {inv['squad_name']}")
+                    try: await member.add_roles(gr, reason=f"Nexus 🔹 Tryout accepted for {inv['squad_name']}")
                     except: pass
 
             # Notify the leader
             leader = guild.get_member(inv["leader_id"])
             if leader:
                 try:
-                    notify = discord.Embed(title="◈ Tryout Accepted", color=CLR_SUCCESS,
+                    notify = discord.Embed(title="🔹 Tryout Accepted", color=CLR_SUCCESS,
                         description=(
                             f"**{interaction.user.display_name}** accepted the tryout for "
                             f"`{inv['squad_tag']}` **{inv['squad_name']}**!\n\n"
@@ -679,10 +679,10 @@ class TryoutResponseView(View):
                     await leader.send(embed=notify)
                 except: pass
 
-            await log_action(guild, "◈ Tryout Accepted",
+            await log_action(guild, "🔹 Tryout Accepted",
                 f"{interaction.user.mention} accepted tryout for **{inv['squad_name']}**")
 
-        e = discord.Embed(title="◈ Tryout Accepted", color=CLR_SUCCESS,
+        e = discord.Embed(title="🔹 Tryout Accepted", color=CLR_SUCCESS,
             description=(
                 f"You've accepted the tryout for `{inv['squad_tag']}` **{inv['squad_name']}**!\n\n"
                 f"` ✓ ` Guest role assigned\n"
@@ -706,14 +706,14 @@ class TryoutResponseView(View):
             leader = guild.get_member(inv["leader_id"])
             if leader:
                 try:
-                    notify = discord.Embed(title="◈ Tryout Declined", color=CLR_WARN,
+                    notify = discord.Embed(title="🔹 Tryout Declined", color=CLR_WARN,
                         description=f"**{interaction.user.display_name}** declined the tryout for **{inv['squad_name']}**.")
                     await leader.send(embed=notify)
                 except: pass
-            await log_action(guild, "◈ Tryout Declined",
+            await log_action(guild, "🔹 Tryout Declined",
                 f"{interaction.user.mention} declined tryout for **{inv['squad_name']}**")
 
-        e = discord.Embed(title="◈ Declined", color=CLR_DIM,
+        e = discord.Embed(title="🔹 Declined", color=CLR_DIM,
             description=f"You declined the tryout for **{inv['squad_name']}**.\nNo worries — you can always apply later.")
         await interaction.response.edit_message(embed=e, view=None)
 
@@ -722,7 +722,7 @@ class TryoutResponseView(View):
 #  R E C R U I T M E N T:  Member posts LFT + Apply direct
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-class FindTeamModal(Modal, title="◈ Looking for Team"):
+class FindTeamModal(Modal, title="🔹 Looking for Team"):
     description = TextInput(label="What kind of team?", placeholder="Describe what you want...", required=True, style=discord.TextStyle.long, max_length=500)
     def __init__(self, uid): super().__init__(); self.uid = uid
     async def on_submit(self, interaction):
@@ -739,7 +739,7 @@ class FindTeamModal(Modal, title="◈ Looking for Team"):
         sq = p.get("squad")
         sq_t = f"`{bot_data['squads'].get(sq, {}).get('tag', '?')}` {sq}" if sq and sq != "Free Agent" and sq in bot_data["squads"] else "Free Agent"
 
-        e = discord.Embed(title=f"◈ {member.display_name} ─ Looking for Team", color=CLR_RECRUIT,
+        e = discord.Embed(title=f"🔹 {member.display_name} ─ Looking for Team", color=CLR_RECRUIT,
             description=f"```\n  IGN     : {p.get('ingame_name', '—')}\n  ID      : #{p.get('ingame_id', '—')}\n  Lane    : {li} {p.get('lane', '—')}\n  Rank    : {p.get('highest_rank', '—')}\n  Current : {sq_t}\n```")
         e.add_field(name="▸ Looking For", value=self.description.value, inline=False)
         extras = [x for x in [p.get("age_group"), p.get("gender")] if x]
@@ -755,7 +755,7 @@ class FindTeamModal(Modal, title="◈ Looking for Team"):
         view = RecruitBtn(pid, self.uid)
         await ch.send(embed=e, view=view)
         await interaction.response.send_message(f"▸ Posted in `#{S('find_team_channel')}`. ID: `{pid}`", ephemeral=True)
-        await log_action(interaction.guild, "◈ LFT", f"{member.mention} posted LFT")
+        await log_action(interaction.guild, "🔹 LFT", f"{member.mention} posted LFT")
 
 
 class RecruitBtn(View):
@@ -794,7 +794,7 @@ class RecruitBtn(View):
 
         try:
             dm_embed = discord.Embed(
-                title="◈ Tryout Invitation",
+                title="🔹 Tryout Invitation",
                 description=(
                     f"`{tag}` **{role.name}** is interested in you!\n\n"
                     f"**{leader.display_name}** (`{leader.name}`) invites you for a tryout."
@@ -824,7 +824,7 @@ class RecruitBtn(View):
         else:
             await interaction.response.send_message(
                 f"▸ **{player.display_name}** has DMs off.", ephemeral=True)
-        await log_action(interaction.guild, "◈ Tryout Sent",
+        await log_action(interaction.guild, "🔹 Tryout Sent",
             f"{leader.mention} → {player.mention} for **{role.name}**")
 
 
@@ -866,7 +866,7 @@ class ApplyDirectView(View):
             sent = 0
             for leader in leaders:
                 try:
-                    de = discord.Embed(title=f"◈ Application ─ {tag} {sq_name}", color=CLR_RECRUIT,
+                    de = discord.Embed(title=f"🔹 Application ─ {tag} {sq_name}", color=CLR_RECRUIT,
                         description=f"**{member.display_name}** wants to join.")
                     de.add_field(name="IGN", value=f"`{p.get('ingame_name')}`", inline=True)
                     de.add_field(name="ID", value=f"`#{p.get('ingame_id')}`", inline=True)
@@ -880,12 +880,12 @@ class ApplyDirectView(View):
                 except: pass
 
             if sent:
-                e = discord.Embed(title="◈ Sent", color=CLR_SUCCESS,
+                e = discord.Embed(title="🔹 Sent", color=CLR_SUCCESS,
                     description=f"Application to `{tag}` **{sq_name}** sent to {sent} leader(s).")
             else:
-                e = discord.Embed(title="◈ Failed", color=CLR_WARN, description="Leaders have DMs off.")
+                e = discord.Embed(title="🔹 Failed", color=CLR_WARN, description="Leaders have DMs off.")
             await interaction.response.edit_message(embed=e, view=None)
-            await log_action(guild, "◈ Direct Apply", f"{member.mention} → **{sq_name}**")
+            await log_action(guild, "🔹 Direct Apply", f"{member.mention} → **{sq_name}**")
         sel.callback = cb
 
 
@@ -893,7 +893,7 @@ class ApplyDirectView(View):
 #  C O R E   M O D A L S
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-class ProfileEditModal(Modal, title="◈ Edit Profile"):
+class ProfileEditModal(Modal, title="🔹 Edit Profile"):
     ign = TextInput(label="In-Game Name", required=False, max_length=50)
     gid = TextInput(label="In-Game ID", required=False, max_length=50)
 
@@ -919,7 +919,7 @@ class ProfileEditModal(Modal, title="◈ Edit Profile"):
         bot_data["players"][pk] = p; save_data(bot_data)
 
         li = LANE_ICONS.get(self.lane, "·")
-        e = discord.Embed(title="◈ Updated", color=CLR_SUCCESS)
+        e = discord.Embed(title="🔹 Updated", color=CLR_SUCCESS)
         e.add_field(name="IGN", value=f"`{p['ingame_name'] or '—'}`", inline=True)
         e.add_field(name="ID", value=f"`{p['ingame_id'] or '—'}`", inline=True)
         e.add_field(name="Rank", value=self.rank_val or "—", inline=True)
@@ -927,26 +927,26 @@ class ProfileEditModal(Modal, title="◈ Edit Profile"):
         await interaction.response.send_message(embed=e, ephemeral=True)
 
 
-class CreateSquadModal(Modal, title="◈ Create Squad"):
+class CreateSquadModal(Modal, title="🔹 Create Squad"):
     name = TextInput(label="Squad Name", required=True, max_length=50)
     tag = TextInput(label="Squad Tag", required=True, max_length=10)
     async def on_submit(self, interaction):
         n, t = self.name.value.strip(), self.tag.value.strip()
         if n in bot_data["squads"]:
             await interaction.response.send_message(f"▸ **{n}** exists.", ephemeral=True); return
-        try: await interaction.guild.create_role(name=n, color=discord.Color.from_str("#00D4FF"), reason=f"Nexus ◈ {n}")
+        try: await interaction.guild.create_role(name=n, color=discord.Color.from_str("#00D4FF"), reason=f"Nexus 🔹 {n}")
         except Exception as ex: await interaction.response.send_message(f"▸ Failed: {ex}", ephemeral=True); return
         gn = f"{n.replace(' ', '.')}_guest"
-        try: await interaction.guild.create_role(name=gn, color=discord.Color.dark_grey(), reason=f"Nexus ◈ Guest: {n}")
+        try: await interaction.guild.create_role(name=gn, color=discord.Color.dark_grey(), reason=f"Nexus 🔹 Guest: {n}")
         except: pass
         bot_data["squads"][n] = {"tag": t, "main_roster": [], "subs": [], "guest_role": gn,
             "created_by": interaction.user.id, "created_at": datetime.utcnow().isoformat()}
         save_data(bot_data)
-        await interaction.response.send_message(embed=discord.Embed(title="◈ Created", color=CLR_SUCCESS, description=f"`{t}` **{n}** is active."))
-        await log_action(interaction.guild, "◈ Squad Created", f"{interaction.user.mention} ─ **{t} {n}**")
+        await interaction.response.send_message(embed=discord.Embed(title="🔹 Created", color=CLR_SUCCESS, description=f"`{t}` **{n}** is active."))
+        await log_action(interaction.guild, "🔹 Squad Created", f"{interaction.user.mention} ─ **{t} {n}**")
 
 
-class DeleteSquadModal(Modal, title="◈ Delete Squad"):
+class DeleteSquadModal(Modal, title="🔹 Delete Squad"):
     name = TextInput(label="Squad Name", required=True)
     confirm = TextInput(label="Type CONFIRM", required=True, max_length=10)
     async def on_submit(self, interaction):
@@ -958,20 +958,20 @@ class DeleteSquadModal(Modal, title="◈ Delete Squad"):
         info = bot_data["squads"][n]
         role = discord.utils.get(interaction.guild.roles, name=n)
         if role:
-            try: await role.delete(reason="Nexus ◈")
+            try: await role.delete(reason="Nexus 🔹")
             except: pass
         gn = info.get("guest_role")
         if gn:
             gr = discord.utils.get(interaction.guild.roles, name=gn)
             if gr:
-                try: await gr.delete(reason="Nexus ◈")
+                try: await gr.delete(reason="Nexus 🔹")
                 except: pass
         del bot_data["squads"][n]; save_data(bot_data)
-        await interaction.response.send_message(embed=discord.Embed(title="◈ Deleted", color=CLR_DANGER, description=f"**{n}** removed."))
-        await log_action(interaction.guild, "◈ Deleted", f"{interaction.user.mention} ─ **{n}**")
+        await interaction.response.send_message(embed=discord.Embed(title="🔹 Deleted", color=CLR_DANGER, description=f"**{n}** removed."))
+        await log_action(interaction.guild, "🔹 Deleted", f"{interaction.user.mention} ─ **{n}**")
 
 
-class ConfigModal(Modal, title="◈ Configure Roles"):
+class ConfigModal(Modal, title="🔹 Configure Roles"):
     ver_role = TextInput(label="Verified Role", required=False, max_length=50)
     unver_role = TextInput(label="Unverified Role", required=False, max_length=50)
     ver_ch = TextInput(label="Verification Channel", required=False, max_length=50)
@@ -988,15 +988,15 @@ class ConfigModal(Modal, title="◈ Configure Roles"):
                 if key in ["verified_role", "unverified_role"]:
                     old = discord.utils.get(interaction.guild.roles, name=s[key])
                     if old:
-                        try: await old.edit(name=field.value, reason="Nexus ◈")
+                        try: await old.edit(name=field.value, reason="Nexus 🔹")
                         except: pass
                 s[key] = field.value; changed.append(f"{key} → `{field.value}`")
         save_data(bot_data)
         desc = "\n".join(f"` ✓ ` {c}" for c in changed) if changed else "No changes."
-        await interaction.response.send_message(embed=discord.Embed(title="◈ Updated", color=CLR_SUCCESS, description=desc), ephemeral=True)
+        await interaction.response.send_message(embed=discord.Embed(title="🔹 Updated", color=CLR_SUCCESS, description=desc), ephemeral=True)
 
 
-class ConfigChannelsModal(Modal, title="◈ Recruitment Channels"):
+class ConfigChannelsModal(Modal, title="🔹 Recruitment Channels"):
     fp = TextInput(label="Find Player Channel", required=False, max_length=50)
     ft = TextInput(label="Find Team Channel", required=False, max_length=50)
     def __init__(self):
@@ -1010,7 +1010,7 @@ class ConfigChannelsModal(Modal, title="◈ Recruitment Channels"):
             s["find_team_channel"] = self.ft.value; changed.append(f"Find Team → `#{self.ft.value}`")
         save_data(bot_data)
         desc = "\n".join(f"` ✓ ` {c}" for c in changed) if changed else "No changes."
-        await interaction.response.send_message(embed=discord.Embed(title="◈ Updated", color=CLR_SUCCESS, description=desc), ephemeral=True)
+        await interaction.response.send_message(embed=discord.Embed(title="🔹 Updated", color=CLR_SUCCESS, description=desc), ephemeral=True)
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1019,7 +1019,7 @@ class ConfigChannelsModal(Modal, title="◈ Recruitment Channels"):
 
 async def show_squad_info(interaction, squad_role, squad_name, tag, public=False):
     info = bot_data["squads"].get(squad_name, {})
-    e = discord.Embed(title=f"◈ {squad_name}", description=f"```\nTag: {tag}\n```",
+    e = discord.Embed(title=f"🔹 {squad_name}", description=f"```\nTag: {tag}\n```",
         color=squad_role.color if squad_role else CLR_MAIN)
     mains = info.get("main_roster", [])
     if mains:
@@ -1055,14 +1055,14 @@ async def show_squad_info(interaction, squad_role, squad_name, tag, public=False
         gr = discord.utils.get(interaction.guild.roles, name=gn)
         if gr and gr.members:
             e.add_field(name="▸ Guests", value=", ".join(m.display_name for m in gr.members[:10]), inline=False)
-    e.set_footer(text="◈ Nexus")
+    e.set_footer(text="🔹 Nexus")
     await interaction.response.send_message(embed=e, ephemeral=not public)
 
 
 async def show_profile(interaction, member, public=False):
     pk = str(member.id); p = bot_data["players"].get(pk)
     if not p or not p.get("ingame_name"):
-        e = discord.Embed(title="◈ Not Found", color=CLR_DIM, description=f"{member.mention} has no profile.")
+        e = discord.Embed(title="🔹 Not Found", color=CLR_DIM, description=f"{member.mention} has no profile.")
         e.set_thumbnail(url=member.display_avatar.url)
         await interaction.response.send_message(embed=e, ephemeral=not public); return
     sq = p.get("squad"); sr, st = None, ""
@@ -1074,7 +1074,7 @@ async def show_profile(interaction, member, public=False):
         if member.id in si.get("main_roster", []): roster = "Main"
         elif member.id in si.get("subs", []): roster = "Sub"
     lane = p.get("lane", "—"); li = LANE_ICONS.get(lane, "·")
-    e = discord.Embed(title=f"◈ {p.get('ingame_name', '—')}", description=f"*{member.mention}*",
+    e = discord.Embed(title=f"🔹 {p.get('ingame_name', '—')}", description=f"*{member.mention}*",
         color=sr.color if sr else CLR_MAIN)
     e.add_field(name="IGN", value=f"`{p.get('ingame_name', '—')}`", inline=True)
     e.add_field(name="ID", value=f"`#{p.get('ingame_id', '—')}`", inline=True)
@@ -1095,7 +1095,7 @@ async def show_profile(interaction, member, public=False):
             txt += f"`{t}` {s} ─ left {d}\n"
         e.add_field(name="▸ History", value=txt, inline=False)
     if is_leader(member): e.add_field(name="Status", value="**LEADER**", inline=False)
-    e.set_thumbnail(url=member.display_avatar.url); e.set_footer(text="◈ Nexus")
+    e.set_thumbnail(url=member.display_avatar.url); e.set_footer(text="🔹 Nexus")
     await interaction.response.send_message(embed=e, ephemeral=not public)
 
 
@@ -1145,8 +1145,8 @@ class MemberSelector(View):
         await m.add_roles(self.squad_role)
         tag = bot_data["squads"].get(self.squad_name, {}).get("tag", "")
         await safe_nick(m, self.squad_role, tag); update_player_squad(m.id, self.squad_name, old_n)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Added", color=CLR_SUCCESS, description=f"{m.mention} → **{self.squad_name}**"), view=None)
-        await log_action(self.guild, "◈ Added", f"{i.user.mention} added {m.mention} to **{self.squad_name}**")
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Added", color=CLR_SUCCESS, description=f"{m.mention} → **{self.squad_name}**"), view=None)
+        await log_action(self.guild, "🔹 Added", f"{i.user.mention} added {m.mention} to **{self.squad_name}**")
 
     async def _do_remove_member(self, i, m):
         info = bot_data["squads"][self.squad_name]
@@ -1154,7 +1154,7 @@ class MemberSelector(View):
         if m.id in info.get("subs", []): info["subs"].remove(m.id)
         await m.remove_roles(self.squad_role); await safe_nick(m, None, "")
         update_player_squad(m.id, "Free Agent", self.squad_name); save_data(bot_data)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Removed", color=CLR_DANGER, description=f"{m.mention} removed from **{self.squad_name}**"), view=None)
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Removed", color=CLR_DANGER, description=f"{m.mention} removed from **{self.squad_name}**"), view=None)
 
     async def _do_set_main(self, i, m):
         info = bot_data["squads"][self.squad_name]; mains = info.setdefault("main_roster", [])
@@ -1162,13 +1162,13 @@ class MemberSelector(View):
         if m.id in mains: await i.response.edit_message(content="▸ Already main.", embed=None, view=None); return
         if m.id in info.get("subs", []): info["subs"].remove(m.id)
         mains.append(m.id); save_data(bot_data)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Main Set", color=CLR_SUCCESS, description=f"{m.mention} ({len(mains)}/5)"), view=None)
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Main Set", color=CLR_SUCCESS, description=f"{m.mention} ({len(mains)}/5)"), view=None)
 
     async def _do_remove_main(self, i, m):
         info = bot_data["squads"][self.squad_name]; mains = info.get("main_roster", [])
         if m.id not in mains: await i.response.edit_message(content="▸ Not main.", embed=None, view=None); return
         mains.remove(m.id); save_data(bot_data)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Removed", color=CLR_WARN, description=f"{m.mention} off mains"), view=None)
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Removed", color=CLR_WARN, description=f"{m.mention} off mains"), view=None)
 
     async def _do_set_sub(self, i, m):
         info = bot_data["squads"][self.squad_name]; subs = info.setdefault("subs", [])
@@ -1176,13 +1176,13 @@ class MemberSelector(View):
         if m.id in subs: await i.response.edit_message(content="▸ Already sub.", embed=None, view=None); return
         if m.id in info.get("main_roster", []): info["main_roster"].remove(m.id)
         subs.append(m.id); save_data(bot_data)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Sub Set", color=CLR_SUCCESS, description=f"{m.mention} ({len(subs)}/3)"), view=None)
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Sub Set", color=CLR_SUCCESS, description=f"{m.mention} ({len(subs)}/3)"), view=None)
 
     async def _do_remove_sub(self, i, m):
         info = bot_data["squads"][self.squad_name]; subs = info.get("subs", [])
         if m.id not in subs: await i.response.edit_message(content="▸ Not sub.", embed=None, view=None); return
         subs.remove(m.id); save_data(bot_data)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Removed", color=CLR_WARN, description=f"{m.mention} off subs"), view=None)
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Removed", color=CLR_WARN, description=f"{m.mention} off subs"), view=None)
 
     async def _do_give_guest(self, i, m):
         gn = bot_data["squads"].get(self.squad_name, {}).get("guest_role")
@@ -1190,7 +1190,7 @@ class MemberSelector(View):
         gr = discord.utils.get(self.guild.roles, name=gn)
         if not gr: await i.response.edit_message(content=f"▸ `{gn}` missing.", embed=None, view=None); return
         await m.add_roles(gr)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Guest", color=CLR_SUCCESS, description=f"{m.mention} → guest"), view=None)
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Guest", color=CLR_SUCCESS, description=f"{m.mention} → guest"), view=None)
 
     async def _do_remove_guest(self, i, m):
         gn = bot_data["squads"].get(self.squad_name, {}).get("guest_role")
@@ -1198,7 +1198,7 @@ class MemberSelector(View):
         gr = discord.utils.get(self.guild.roles, name=gn)
         if not gr or gr not in m.roles: await i.response.edit_message(content="▸ No guest on them.", embed=None, view=None); return
         await m.remove_roles(gr)
-        await i.response.edit_message(embed=discord.Embed(title="◈ Removed", color=CLR_WARN, description=f"{m.mention} guest revoked"), view=None)
+        await i.response.edit_message(embed=discord.Embed(title="🔹 Removed", color=CLR_WARN, description=f"{m.mention} guest revoked"), view=None)
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1244,7 +1244,7 @@ class EditProfileFlow(View):
         s2.callback = rank_cb; self.add_item(s2)
 
 
-class EditStarModal(Modal, title="◈ Star Count"):
+class EditStarModal(Modal, title="🔹 Star Count"):
     """When editing profile with Glory/Immortal rank."""
     stars = TextInput(label="How many stars?", placeholder="e.g. 50, 130, 600", required=True, max_length=10)
 
@@ -1277,32 +1277,32 @@ class RecruitLaneSel(View):
 class MemberPanel(View):
     def __init__(self): super().__init__(timeout=None)
 
-    @discord.ui.button(label="My Squad", style=discord.ButtonStyle.primary, emoji="◈", row=0)
+    @discord.ui.button(label="My Squad", style=discord.ButtonStyle.primary, emoji="🔹", row=0)
     async def sq(self, i, b):
         role, tag = get_member_squad(i.user, i.guild)
         if not role: await i.response.send_message("▸ Not in a squad.", ephemeral=True); return
         await show_squad_info(i, role, role.name, tag, public=False)
 
-    @discord.ui.button(label="My Profile", style=discord.ButtonStyle.primary, emoji="◆", row=0)
+    @discord.ui.button(label="My Profile", style=discord.ButtonStyle.primary, emoji="👤", row=0)
     async def pr(self, i, b): await show_profile(i, i.user, public=False)
 
-    @discord.ui.button(label="Edit Profile", style=discord.ButtonStyle.secondary, emoji="✎", row=0)
+    @discord.ui.button(label="Edit Profile", style=discord.ButtonStyle.secondary, emoji="✏️", row=0)
     async def ed(self, i, b):
         role, _ = get_member_squad(i.user, i.guild)
         sq = role.name if role else "Free Agent"
         v = EditProfileFlow(i.user.id, sq)
-        e = discord.Embed(title="◈ Edit Profile", color=CLR_ACCENT,
+        e = discord.Embed(title="🔹 Edit Profile", color=CLR_ACCENT,
             description="**Step 1:** Select your lane\n**Step 2:** Select your rank\n*(Glory/Immortal will ask for star count)*\n**Step 3:** Fill in IGN & Game ID")
         await i.response.send_message(embed=e, view=v, ephemeral=True)
 
-    @discord.ui.button(label="Find Team", style=discord.ButtonStyle.success, emoji="⇠", row=1)
+    @discord.ui.button(label="Find Team", style=discord.ButtonStyle.success, emoji="🔍", row=1)
     async def ft(self, i, b):
         p = bot_data["players"].get(str(i.user.id))
         if not p or not p.get("ingame_name"):
             await i.response.send_message("▸ Profile needed.", ephemeral=True); return
         await i.response.send_modal(FindTeamModal(i.user.id))
 
-    @discord.ui.button(label="Apply to Squad", style=discord.ButtonStyle.success, emoji="⇢", row=1)
+    @discord.ui.button(label="Apply to Squad", style=discord.ButtonStyle.success, emoji="📨", row=1)
     async def ap(self, i, b):
         if not bot_data["squads"]:
             await i.response.send_message("▸ No squads.", ephemeral=True); return
@@ -1310,9 +1310,9 @@ class MemberPanel(View):
         if not p or not p.get("ingame_name"):
             await i.response.send_message("▸ Profile needed.", ephemeral=True); return
         v = ApplyDirectView(i.user.id)
-        await i.response.send_message(embed=discord.Embed(title="◈ Apply", description="Select squad.", color=CLR_RECRUIT), view=v, ephemeral=True)
+        await i.response.send_message(embed=discord.Embed(title="🔹 Apply", description="Select squad.", color=CLR_RECRUIT), view=v, ephemeral=True)
 
-    @discord.ui.button(label="Leave Squad", style=discord.ButtonStyle.danger, emoji="↗", row=2)
+    @discord.ui.button(label="Leave Squad", style=discord.ButtonStyle.danger, emoji="🚪", row=2)
     async def lv(self, i, b):
         role, _ = get_member_squad(i.user, i.guild)
         if not role: await i.response.send_message("▸ Not in squad.", ephemeral=True); return
@@ -1335,59 +1335,59 @@ class LeaderPanel(View):
 
     @discord.ui.button(label="Add Member", emoji="＋", style=discord.ButtonStyle.success, row=0)
     async def add(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Add", color=CLR_ACCENT),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Add", color=CLR_ACCENT),
             view=MemberSelector("add_member", self.sr, self.sq, i.guild), ephemeral=True)
 
     @discord.ui.button(label="Remove Member", emoji="－", style=discord.ButtonStyle.danger, row=0)
     async def rm(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Remove", color=CLR_DANGER),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Remove", color=CLR_DANGER),
             view=MemberSelector("remove_member", self.sr, self.sq, i.guild), ephemeral=True)
 
-    @discord.ui.button(label="View Squad", emoji="◈", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="View Squad", emoji="🔹", style=discord.ButtonStyle.primary, row=0)
     async def vs(self, i, b): await show_squad_info(i, self.sr, self.sq, self.tag, public=False)
 
     @discord.ui.button(label="Set Main", emoji="★", style=discord.ButtonStyle.primary, row=1)
     async def sm(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Main (5)", color=CLR_ACCENT),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Main (5)", color=CLR_ACCENT),
             view=MemberSelector("set_main", self.sr, self.sq, i.guild), ephemeral=True)
 
     @discord.ui.button(label="Remove Main", emoji="☆", style=discord.ButtonStyle.secondary, row=1)
     async def rmm(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Rm Main", color=CLR_WARN),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Rm Main", color=CLR_WARN),
             view=MemberSelector("remove_main", self.sr, self.sq, i.guild), ephemeral=True)
 
     @discord.ui.button(label="Set Sub", emoji="↻", style=discord.ButtonStyle.primary, row=2)
     async def ss(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Sub (3)", color=CLR_ACCENT),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Sub (3)", color=CLR_ACCENT),
             view=MemberSelector("set_sub", self.sr, self.sq, i.guild), ephemeral=True)
 
     @discord.ui.button(label="Remove Sub", emoji="×", style=discord.ButtonStyle.secondary, row=2)
     async def rms(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Rm Sub", color=CLR_WARN),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Rm Sub", color=CLR_WARN),
             view=MemberSelector("remove_sub", self.sr, self.sq, i.guild), ephemeral=True)
 
     @discord.ui.button(label="Post Recruitment", emoji="⊕", style=discord.ButtonStyle.success, row=3)
     async def pr(self, i, b):
         v = RecruitLaneSel(self.sq, self.tag, i.user.id)
-        e = discord.Embed(title="◈ Post Recruitment", color=CLR_RECRUIT,
+        e = discord.Embed(title="🔹 Post Recruitment", color=CLR_RECRUIT,
             description=f"Select the lane you need.\nPost goes to `#{S('find_player_channel')}`.")
         await i.response.send_message(embed=e, view=v, ephemeral=True)
 
     @discord.ui.button(label="Search Player", emoji="⊙", style=discord.ButtonStyle.primary, row=3)
     async def sp(self, i, b):
         v = SearchFiltersView(self.sq, self.tag, i.user.id)
-        e = discord.Embed(title="◈ Search Player", color=CLR_ACCENT,
+        e = discord.Embed(title="🔹 Search Player", color=CLR_ACCENT,
             description="**Lane** (required) + optional filters:\n▸ **Min Rank** — only show players at this rank or higher\n▸ **Gender** — filter by gender\n\nSelect filters then click **Search**.")
         await i.response.send_message(embed=e, view=v, ephemeral=True)
 
     @discord.ui.button(label="Give Guest", emoji="☉", style=discord.ButtonStyle.secondary, row=4)
     async def gg(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Guest", color=CLR_ACCENT),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Guest", color=CLR_ACCENT),
             view=MemberSelector("give_guest", self.sr, self.sq, i.guild), ephemeral=True)
 
     @discord.ui.button(label="Remove Guest", emoji="⊘", style=discord.ButtonStyle.secondary, row=4)
     async def rg(self, i, b):
-        await i.response.send_message(embed=discord.Embed(title="◈ Rm Guest", color=CLR_WARN),
+        await i.response.send_message(embed=discord.Embed(title="🔹 Rm Guest", color=CLR_WARN),
             view=MemberSelector("remove_guest", self.sr, self.sq, i.guild), ephemeral=True)
 
 
@@ -1400,10 +1400,10 @@ class ModPanel(View):
     @discord.ui.button(label="Delete Squad", style=discord.ButtonStyle.danger, emoji="－", row=0)
     async def ds(self, i, b): await i.response.send_modal(DeleteSquadModal())
 
-    @discord.ui.button(label="Setup Verification", style=discord.ButtonStyle.primary, emoji="◈", row=1)
+    @discord.ui.button(label="Setup Verification", style=discord.ButtonStyle.primary, emoji="🔹", row=1)
     async def sv(self, i, b):
         await ensure_roles(i.guild); await send_verify_embed(i.guild)
-        await i.response.send_message(embed=discord.Embed(title="◈ Deployed", color=CLR_SUCCESS,
+        await i.response.send_message(embed=discord.Embed(title="🔹 Deployed", color=CLR_SUCCESS,
             description=f"Embed in `#{S('verification_channel')}`. Click **Grant Existing** before locking."), ephemeral=True)
 
     @discord.ui.button(label="Grant Existing", style=discord.ButtonStyle.success, emoji="✓", row=1)
@@ -1416,12 +1416,12 @@ class ModPanel(View):
         for m in guild.members:
             if m.bot: continue
             if vr not in m.roles:
-                try: await m.add_roles(vr, reason="Nexus ◈"); count += 1; await asyncio.sleep(0.3)
+                try: await m.add_roles(vr, reason="Nexus 🔹"); count += 1; await asyncio.sleep(0.3)
                 except: errors += 1
             if ur and ur in m.roles:
                 try: await m.remove_roles(ur)
                 except: pass
-        e = discord.Embed(title="◈ Granted", color=CLR_SUCCESS, description=(
+        e = discord.Embed(title="🔹 Granted", color=CLR_SUCCESS, description=(
             f"` ✓ ` **{count}** got `{S('verified_role')}`\n"
             + (f"` ! ` {errors} failed\n" if errors else "")
             + f"\n**Lock channels:**\n` 1 ` `@everyone` → Deny View\n` 2 ` `#{S('verification_channel')}` → `{S('unverified_role')}` View\n` 3 ` Other → `{S('verified_role')}` View+Send"))
@@ -1437,7 +1437,7 @@ class ModPanel(View):
     async def bk(self, i, b):
         if not os.path.exists(DATA_FILE):
             await i.response.send_message("▸ No data.", ephemeral=True); return
-        try: await i.response.send_message("◈ **Backup**",
+        try: await i.response.send_message("🔹 **Backup**",
             file=discord.File(DATA_FILE, filename=f"nexus_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"), ephemeral=True)
         except Exception as ex: await i.response.send_message(f"▸ {ex}", ephemeral=True)
 
@@ -1460,7 +1460,7 @@ async def on_ready():
             bot.add_view(TryoutResponseView(inv["invite_id"]))
 
     await bot.tree.sync(); tag_sync.start()
-    print(f"Online: {bot.user}\n◈ Nexus ready")
+    print(f"Online: {bot.user}\n🔹 Nexus ready")
     for guild in bot.guilds:
         await ensure_roles(guild); await send_verify_embed(guild)
 
@@ -1470,10 +1470,10 @@ async def on_member_join(member):
     if member.bot: return
     ur = discord.utils.get(member.guild.roles, name=S("unverified_role"))
     if ur:
-        try: await member.add_roles(ur, reason="Nexus ◈ New")
+        try: await member.add_roles(ur, reason="Nexus 🔹 New")
         except: pass
     try:
-        await member.send(embed=discord.Embed(title="◈ Welcome", color=CLR_ACCENT,
+        await member.send(embed=discord.Embed(title="🔹 Welcome", color=CLR_ACCENT,
             description=f"Hey **{member.display_name}**, go to `#{S('verification_channel')}` and click **Verify**."))
     except: pass
 
@@ -1495,19 +1495,19 @@ async def tag_sync():
 #  S L A S H   C O M M A N D S
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-@bot.tree.command(name="panel", description="◈ Member panel")
+@bot.tree.command(name="panel", description="🔹 Member panel")
 async def panel_cmd(interaction: discord.Interaction):
     v = MemberPanel()
     role, tag = get_member_squad(interaction.user, interaction.guild)
     sq = f"\n`{tag}` **{role.name}**" if role else "\nFree Agent"
-    e = discord.Embed(title="◈ Member Panel", color=CLR_MAIN,
+    e = discord.Embed(title="🔹 Member Panel", color=CLR_MAIN,
         description=f"```\n{interaction.user.display_name}\n```{sq}")
-    e.add_field(name="▸ Actions", value="◈ Squad · ◆ Profile · ✎ Edit\n⇠ Find Team · ⇢ Apply · ↗ Leave", inline=False)
-    e.set_thumbnail(url=interaction.user.display_avatar.url); e.set_footer(text="◈ Nexus")
+    e.add_field(name="▸ Actions", value="🔹 Squad · 👤 Profile · ✏️ Edit\n🔍 Find Team · 📨 Apply · 🚪 Leave", inline=False)
+    e.set_thumbnail(url=interaction.user.display_avatar.url); e.set_footer(text="🔹 Nexus")
     await interaction.response.send_message(embed=e, view=v, ephemeral=True)
 
 
-@bot.tree.command(name="leader_panel", description="◈ Leader panel")
+@bot.tree.command(name="leader_panel", description="🔹 Leader panel")
 async def leader_cmd(interaction: discord.Interaction):
     if not is_leader(interaction.user):
         await interaction.response.send_message("▸ Leaders only.", ephemeral=True); return
@@ -1515,7 +1515,7 @@ async def leader_cmd(interaction: discord.Interaction):
     if not role:
         await interaction.response.send_message("▸ Must be in a squad.", ephemeral=True); return
     v = LeaderPanel(role, tag, role.name)
-    e = discord.Embed(title=f"◈ Leader ─ {role.name}",
+    e = discord.Embed(title=f"🔹 Leader ─ {role.name}",
         color=role.color if role.color != discord.Color.default() else CLR_ACCENT,
         description=f"```\n  {tag:^20}\n```")
     e.add_field(name="▸ Manage", value="＋/－ Members · ★/☆ Mains · ↻/× Subs", inline=False)
@@ -1524,36 +1524,36 @@ async def leader_cmd(interaction: discord.Interaction):
         "⊙ **Search** → filter by lane + rank + gender → send **tryout invite**"
     ), inline=False)
     e.add_field(name="▸ Access", value="☉/⊘ Guest roles", inline=False)
-    e.set_footer(text="◈ Nexus")
+    e.set_footer(text="🔹 Nexus")
     await interaction.response.send_message(embed=e, view=v, ephemeral=True)
 
 
-@bot.tree.command(name="mod_panel", description="◈ Moderator panel")
+@bot.tree.command(name="mod_panel", description="🔹 Moderator panel")
 async def mod_cmd(interaction: discord.Interaction):
     if not is_mod(interaction.user):
         await interaction.response.send_message("▸ Moderators only.", ephemeral=True); return
     v = ModPanel(); s = bot_data["settings"]
-    e = discord.Embed(title="◈ Moderator Panel", color=CLR_MAIN, description="```\n  SERVER  CONTROLS\n```")
+    e = discord.Embed(title="🔹 Moderator Panel", color=CLR_MAIN, description="```\n  SERVER  CONTROLS\n```")
     e.add_field(name="▸ Squads", value="＋ Create · － Delete", inline=False)
-    e.add_field(name="▸ Verification", value="◈ Deploy · ✓ Grant existing", inline=False)
+    e.add_field(name="▸ Verification", value="🔹 Deploy · ✓ Grant existing", inline=False)
     e.add_field(name="▸ Config", value="⚙ Roles · ⌘ Channels · ↓ Backup", inline=False)
     e.add_field(name="▸ Settings", value=(
         f"Verified: `{s.get('verified_role')}`\nUnverified: `{s.get('unverified_role')}`\n"
         f"Verify: `#{s.get('verification_channel')}`\nLogs: `#{s.get('log_channel')}`\n"
         f"Find Player: `#{s.get('find_player_channel')}`\nFind Team: `#{s.get('find_team_channel')}`"
     ), inline=False)
-    e.set_footer(text="◈ Nexus")
+    e.set_footer(text="🔹 Nexus")
     await interaction.response.send_message(embed=e, view=v, ephemeral=True)
 
 
-@bot.tree.command(name="profile", description="◈ View profile")
+@bot.tree.command(name="profile", description="🔹 View profile")
 async def profile_cmd(interaction: discord.Interaction, member: discord.Member):
     await show_profile(interaction, member, public=True)
 
 
-@bot.tree.command(name="help", description="◈ Help")
+@bot.tree.command(name="help", description="🔹 Help")
 async def help_cmd(interaction: discord.Interaction):
-    e = discord.Embed(title="◈ Nexus ─ Help", color=CLR_MAIN)
+    e = discord.Embed(title="🔹 Nexus ─ Help", color=CLR_MAIN)
     e.add_field(name="▸ Everyone", value="`/panel` ─ Squad, profile, find team, apply\n`/profile @user` ─ View profile", inline=False)
     e.add_field(name="▸ Leaders", value="`/leader_panel` ─ Members, roster, recruitment, guests", inline=False)
     e.add_field(name="▸ Moderators", value="`/mod_panel` ─ Squads, verification, config, backup", inline=False)
@@ -1562,7 +1562,7 @@ async def help_cmd(interaction: discord.Interaction):
         f"**Players** → Post in `#{S('find_team_channel')}` or apply directly\n"
         "Tryout invites give guest role on accept for voice channel access."
     ), inline=False)
-    e.set_footer(text="◈ /help")
+    e.set_footer(text="🔹 /help")
     await interaction.response.send_message(embed=e, ephemeral=True)
 
 
